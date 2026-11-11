@@ -1,0 +1,16 @@
+INSERT INTO categoria (nombre) VALUES
+    ('Liderazgo'),
+    ('Trabajo en equipo'),
+    ('Excelencia académica'),
+    ('Innovación'),
+    ('Creatividad'),
+    ('Compromiso social'),
+    ('Solidaridad'),
+    ('Respeto'),
+    ('Responsabilidad'),
+    ('Integridad'),
+    ('Espíritu de servicio'),
+    ('Investigación'),
+    ('Emprendimiento'),
+    ('Inclusión'),
+    ('Sostenibilidad');

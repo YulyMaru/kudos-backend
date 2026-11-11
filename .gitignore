@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### UCO Kudos ###
+almacenamiento-local/
+.env

@@ -1,0 +1,9 @@
+target/
+.idea/
+.git/
+.github/
+.vscode/
+almacenamiento-local/
+*.iml
+.env
+HELP.md

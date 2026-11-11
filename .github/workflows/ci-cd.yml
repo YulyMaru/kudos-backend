@@ -1,0 +1,152 @@
+name: CI/CD backend
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  IMAGEN_LOCAL: kudos-backend:${{ github.sha }}
+  TRIVY_IMAGEN: aquasec/trivy:0.58.1
+
+jobs:
+  construir-y-analizar:
+    name: Compilar, probar y analizar calidad
+    runs-on: ubuntu-24.04
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    steps:
+      - name: Obtener código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Instalar Java 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+      - name: Compilar y ejecutar pruebas con cobertura JaCoCo
+        run: |
+          chmod +x mvnw
+          ./mvnw -B -ntp verify
+
+      - name: Publicar reportes de pruebas y cobertura
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reportes-pruebas
+          path: |
+            target/surefire-reports
+            target/site/jacoco
+          retention-days: 7
+
+      - name: Análisis y compuerta de calidad en SonarQube Cloud
+        if: env.SONAR_TOKEN != ''
+        run: >
+          ./mvnw -B -ntp sonar:sonar
+          -Dsonar.host.url=https://sonarcloud.io
+          -Dsonar.organization=${{ vars.SONAR_ORGANIZACION }}
+          -Dsonar.projectKey=${{ vars.SONAR_PROYECTO }}
+          -Dsonar.qualitygate.wait=true
+
+  imagen:
+    name: Construir imagen y escanear con Trivy
+    needs: construir-y-analizar
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Obtener código
+        uses: actions/checkout@v4
+
+      - name: Escanear secretos y configuración del repositorio
+        run: >
+          docker run --rm -v "$PWD:/repositorio" "$TRIVY_IMAGEN"
+          fs --exit-code 1 --scanners secret,misconfig --severity HIGH,CRITICAL --no-progress /repositorio
+
+      - name: Construir imagen
+        run: docker build -t "$IMAGEN_LOCAL" .
+
+      - name: Escanear vulnerabilidades críticas de la imagen
+        run: >
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock "$TRIVY_IMAGEN"
+          image --exit-code 1 --severity CRITICAL --ignore-unfixed --no-progress "$IMAGEN_LOCAL"
+
+      - name: Exportar imagen para el despliegue
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: docker save "$IMAGEN_LOCAL" -o imagen.tar
+
+      - name: Guardar imagen
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: imagen
+          path: imagen.tar
+          retention-days: 1
+
+  desplegar:
+    name: Desplegar en Cloud Run
+    needs: imagen
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    environment: produccion
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      IMAGEN_REMOTA: ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROYECTO }}/${{ vars.GCP_REPOSITORIO }}/kudos-backend:${{ github.sha }}
+    steps:
+      - name: Descargar imagen
+        uses: actions/download-artifact@v4
+        with:
+          name: imagen
+
+      - name: Cargar imagen
+        run: docker load -i imagen.tar
+
+      - name: Autenticarse en Google Cloud con Workload Identity Federation
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_PROVEEDOR_IDENTIDAD }}
+          service_account: ${{ vars.GCP_CUENTA_DESPLIEGUE }}
+
+      - name: Instalar gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Publicar imagen en Artifact Registry
+        run: |
+          gcloud auth configure-docker "${{ vars.GCP_REGION }}-docker.pkg.dev" --quiet
+          docker tag "$IMAGEN_LOCAL" "$IMAGEN_REMOTA"
+          docker push "$IMAGEN_REMOTA"
+
+      - name: Desplegar servicio
+        run: >
+          gcloud run deploy "${{ vars.CLOUD_RUN_SERVICIO }}"
+          --image "$IMAGEN_REMOTA"
+          --region "${{ vars.GCP_REGION }}"
+          --service-account "${{ vars.GCP_CUENTA_EJECUCION }}"
+          --allow-unauthenticated
+          --port 8080
+          --cpu 1
+          --memory 1Gi
+          --min-instances 0
+          --max-instances 1
+          --no-cpu-throttling
+          --cpu-boost
+          --update-env-vars "^;^SPRING_PROFILES_ACTIVE=cloud;ALMACENAMIENTO_TIPO=s3;S3_ENDPOINT=${{ vars.S3_ENDPOINT }};S3_REGION=${{ vars.S3_REGION }};S3_BUCKET=${{ vars.S3_BUCKET }};CORS_ORIGENES=${{ vars.CORS_ORIGENES }};URL_FRONTEND=${{ vars.URL_FRONTEND }};CORREO_REMITENTE=${{ vars.CORREO_REMITENTE }};WHATSAPP_TELEFONO_ID=${{ vars.WHATSAPP_TELEFONO_ID }};ADMIN_CORREO=${{ vars.ADMIN_CORREO }}"
+          --update-secrets "DB_URL=kudos-db-url:latest,DB_USUARIO=kudos-db-usuario:latest,DB_CONTRASENA=kudos-db-contrasena:latest,JWT_SECRETO=kudos-jwt-secreto:latest,SMTP_USUARIO=kudos-smtp-usuario:latest,SMTP_CONTRASENA=kudos-smtp-contrasena:latest,WHATSAPP_TOKEN=kudos-whatsapp-token:latest,S3_CLAVE_ACCESO=kudos-s3-clave-acceso:latest,S3_CLAVE_SECRETA=kudos-s3-clave-secreta:latest,ADMIN_CONTRASENA=kudos-admin-contrasena:latest"
+
+      - name: Verificar que el servicio responde
+        run: |
+          URL=$(gcloud run services describe "${{ vars.CLOUD_RUN_SERVICIO }}" --region "${{ vars.GCP_REGION }}" --format 'value(status.url)')
+          curl --fail --silent --show-error --retry 10 --retry-delay 6 --retry-all-errors "$URL/actuator/health"
