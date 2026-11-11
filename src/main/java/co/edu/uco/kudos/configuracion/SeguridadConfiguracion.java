@@ -92,7 +92,7 @@ public class SeguridadConfiguracion {
     }
 
     @Bean
-    CorsConfigurationSource origenesCors(PropiedadesSeguridad propiedades) {
+    CorsConfigurationSource corsConfigurationSource(PropiedadesSeguridad propiedades) {
         CorsConfiguration configuracion = new CorsConfiguration();
         configuracion.setAllowedOrigins(propiedades.origenesPermitidos());
         configuracion.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
