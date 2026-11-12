@@ -31,7 +31,6 @@ class ArchivoPreparadoTest {
         Object archivo = archivo(adjunto, new byte[]{1, 2, 3});
         Object mismoContenido = archivo(adjunto, new byte[]{1, 2, 3});
 
-        assertThat(archivo).isEqualTo(archivo);
         assertThat(archivo).isEqualTo(mismoContenido);
         assertThat(archivo).hasSameHashCodeAs(mismoContenido);
     }
