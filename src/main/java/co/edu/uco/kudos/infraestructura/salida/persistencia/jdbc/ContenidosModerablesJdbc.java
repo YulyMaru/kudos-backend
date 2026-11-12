@@ -21,6 +21,8 @@ public class ContenidosModerablesJdbc implements ContenidosModerables {
             JOIN kudo k ON k.id = r.kudo_id
             WHERE r.id = :id
             """;
+    private static final String VETAR_KUDO = "UPDATE kudo SET vetado = TRUE WHERE id = :id";
+    private static final String VETAR_REPLICA = "UPDATE replica SET vetado = TRUE WHERE id = :id";
 
     private final NamedParameterJdbcTemplate jdbc;
 
@@ -38,7 +40,7 @@ public class ContenidosModerablesJdbc implements ContenidosModerables {
 
     @Override
     public void marcarVetado(TipoContenido tipo, UUID id) {
-        String tabla = tipo == TipoContenido.KUDO ? "kudo" : "replica";
-        jdbc.update("UPDATE " + tabla + " SET vetado = TRUE WHERE id = :id", new MapSqlParameterSource("id", id));
+        String sql = tipo == TipoContenido.KUDO ? VETAR_KUDO : VETAR_REPLICA;
+        jdbc.update(sql, new MapSqlParameterSource("id", id));
     }
 }

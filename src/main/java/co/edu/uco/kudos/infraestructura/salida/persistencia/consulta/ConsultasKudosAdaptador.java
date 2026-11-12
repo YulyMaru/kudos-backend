@@ -29,8 +29,8 @@ public class ConsultasKudosAdaptador implements ConsultasKudos {
 
     private static final String SELECCION = """
             SELECT k.id, k.fecha_publicacion,
-                   left(k.contenido, %d) AS extracto,
-                   char_length(k.contenido) > %d AS truncado,
+                   left(k.contenido, :longitudExtracto) AS extracto,
+                   char_length(k.contenido) > :longitudExtracto AS truncado,
                    k.contenido,
                    a.id AS autor_id, a.nombre_completo AS autor_nombre, a.rol AS autor_rol,
                    d.id AS destinatario_id, d.nombre_completo AS destinatario_nombre, d.rol AS destinatario_rol,
@@ -46,7 +46,7 @@ public class ConsultasKudosAdaptador implements ConsultasKudos {
             JOIN usuario d ON d.id = k.destinatario_id
             JOIN categoria c ON c.id = k.categoria_id
             WHERE k.vetado = FALSE
-            """.formatted(LONGITUD_EXTRACTO, LONGITUD_EXTRACTO);
+            """;
 
     private static final String FEED_PRIMERA_PAGINA = SELECCION + """
             ORDER BY k.fecha_publicacion DESC, k.id DESC
@@ -87,7 +87,8 @@ public class ConsultasKudosAdaptador implements ConsultasKudos {
 
     @Override
     public List<KudoResumenVista> feed(CursorFeed despuesDe, int limite) {
-        MapSqlParameterSource parametros = new MapSqlParameterSource("limite", limite);
+        MapSqlParameterSource parametros = new MapSqlParameterSource("limite", limite)
+                .addValue("longitudExtracto", LONGITUD_EXTRACTO);
         if (despuesDe == null) {
             return jdbc.query(FEED_PRIMERA_PAGINA, parametros, (fila, numero) -> resumen(fila));
         }
@@ -98,7 +99,8 @@ public class ConsultasKudosAdaptador implements ConsultasKudos {
 
     @Override
     public Optional<KudoDetalleDatos> detalle(UUID id) {
-        MapSqlParameterSource parametros = new MapSqlParameterSource("id", id);
+        MapSqlParameterSource parametros = new MapSqlParameterSource("id", id)
+                .addValue("longitudExtracto", LONGITUD_EXTRACTO);
         List<KudoDetalleDatos> encontrados = jdbc.query(DETALLE, parametros, (fila, numero) -> new KudoDetalleDatos(
                 fila.getObject("id", UUID.class), autor(fila), destinatario(fila), categoria(fila),
                 fila.getString("contenido"), fecha(fila), List.of(), fila.getLong("cantidad_replicas"),

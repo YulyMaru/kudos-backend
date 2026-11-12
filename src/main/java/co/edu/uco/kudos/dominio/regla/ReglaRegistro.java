@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 public final class ReglaRegistro {
 
     private static final Pattern CELULAR_E164 = Pattern.compile("^\\+[1-9]\\d{7,14}$");
-    private static final Pattern CORREO = Pattern.compile("^[^@\\s]+@([^@\\s]+\\.[^@\\s]+)$");
+    private static final Pattern CORREO = Pattern.compile("^[^@\\s]++@([^@\\s]++)$");
 
     private ReglaRegistro() {
     }
@@ -23,7 +23,7 @@ public final class ReglaRegistro {
         }
         String normalizado = correo.trim().toLowerCase(Locale.ROOT);
         var coincidencia = CORREO.matcher(normalizado);
-        if (!coincidencia.matches()) {
+        if (!coincidencia.matches() || !tienePuntoInterno(coincidencia.group(1))) {
             throw new ReglaNegocioExcepcion("CORREO_INVALIDO", "correo", "El correo no tiene un formato válido");
         }
         String dominio = coincidencia.group(1);
@@ -35,6 +35,19 @@ public final class ReglaRegistro {
                     "Se requiere un correo institucional (" + String.join(", ", dominiosPermitidos) + ")");
         }
         return normalizado;
+    }
+
+    public static boolean esCorreoValido(String correo) {
+        if (correo == null) {
+            return false;
+        }
+        var coincidencia = CORREO.matcher(correo);
+        return coincidencia.matches() && tienePuntoInterno(coincidencia.group(1));
+    }
+
+    private static boolean tienePuntoInterno(String dominio) {
+        int punto = dominio.indexOf('.', 1);
+        return punto > 0 && punto < dominio.length() - 1;
     }
 
     public static String normalizarCelular(String celular) {

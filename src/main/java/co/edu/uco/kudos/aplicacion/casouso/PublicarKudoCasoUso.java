@@ -33,6 +33,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
@@ -192,5 +193,21 @@ public final class PublicarKudoCasoUso implements PublicarKudoPuerto {
     }
 
     private record ArchivoPreparado(Adjunto adjunto, byte[] contenido) {
+
+        @Override
+        public boolean equals(Object otro) {
+            return otro instanceof ArchivoPreparado archivo && Objects.equals(adjunto, archivo.adjunto)
+                    && Arrays.equals(contenido, archivo.contenido);
+        }
+
+        @Override
+        public int hashCode() {
+            return 31 * Objects.hashCode(adjunto) + Arrays.hashCode(contenido);
+        }
+
+        @Override
+        public String toString() {
+            return "ArchivoPreparado[adjunto=" + adjunto + ", contenido=" + Arrays.toString(contenido) + "]";
+        }
     }
 }

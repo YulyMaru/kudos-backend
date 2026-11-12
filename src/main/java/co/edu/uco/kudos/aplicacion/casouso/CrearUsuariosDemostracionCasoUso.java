@@ -15,6 +15,7 @@ import co.edu.uco.kudos.dominio.modelo.ResultadoAuditoria;
 import co.edu.uco.kudos.dominio.modelo.Rol;
 import co.edu.uco.kudos.dominio.modelo.Usuario;
 import co.edu.uco.kudos.dominio.regla.PoliticaContrasena;
+import co.edu.uco.kudos.dominio.regla.ReglaRegistro;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -27,7 +28,6 @@ import java.util.regex.Pattern;
 public final class CrearUsuariosDemostracionCasoUso implements CrearUsuariosDemostracionPuerto {
 
     private static final Pattern CELULAR_E164 = Pattern.compile("^\\+[1-9]\\d{7,14}$");
-    private static final Pattern CORREO = Pattern.compile("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
 
     private final RepositorioCuentas cuentas;
     private final CodificadorContrasenas codificador;
@@ -73,7 +73,7 @@ public final class CrearUsuariosDemostracionCasoUso implements CrearUsuariosDemo
         if (comando.nombreCompleto() == null || comando.nombreCompleto().isBlank()) {
             throw new CampoObligatorioExcepcion("nombreCompleto");
         }
-        if (comando.correo() == null || !CORREO.matcher(comando.correo().trim()).matches()) {
+        if (comando.correo() == null || !ReglaRegistro.esCorreoValido(comando.correo().trim())) {
             throw new ReglaNegocioExcepcion("CORREO_INVALIDO", "correo",
                     "El correo del usuario de demostración no es válido");
         }

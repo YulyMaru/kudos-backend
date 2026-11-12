@@ -29,7 +29,15 @@ public class CanalCorreoSmtp implements CanalNotificacion {
         this.enviador = Objects.requireNonNull(enviador);
         this.remitente = Objects.requireNonNull(remitente);
         this.nombreRemitente = Objects.requireNonNull(nombreRemitente);
-        this.urlFrontend = Objects.requireNonNull(urlFrontend).replaceAll("/+$", "");
+        this.urlFrontend = sinBarrasFinales(Objects.requireNonNull(urlFrontend));
+    }
+
+    private static String sinBarrasFinales(String url) {
+        int fin = url.length();
+        while (fin > 0 && url.charAt(fin - 1) == '/') {
+            fin--;
+        }
+        return url.substring(0, fin);
     }
 
     @Override
