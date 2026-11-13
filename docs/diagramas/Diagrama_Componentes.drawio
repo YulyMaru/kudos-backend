@@ -1,0 +1,177 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="C4Nivel3" name="C4 Nivel 3 - Componentes API">
+    <mxGraphModel dx="3296" dy="676" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2060" pageHeight="1340" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="b" parent="1" style="rounded=1;arcSize=2;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 4;fillColor=none;strokeColor=#666666;fontColor=#333333;align=left;verticalAlign=bottom;spacing=12;connectable=0;" value="&lt;b style=&quot;font-size:14px&quot;&gt;API Backend&lt;/b&gt;&lt;br&gt;[Container: Spring Boot 4.1 + Java 25 · Cloud Run]" vertex="1">
+          <mxGeometry height="1120" width="1380" x="320" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="c1" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fontSize=11;fillColor=#2B6FBF;strokeColor=#1A4F8F;fontColor=#ffffff;align=center;metaEdit=1;" value="&lt;b style=&quot;font-size:14px&quot;&gt;Aplicación web&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;[Container: Angular · Firebase Hosting]&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;SPA Mobile First que consume la API y recibe notificaciones Push.&lt;/span&gt;" vertex="1">
+          <mxGeometry height="150" width="240" x="-40" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="c2" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fontSize=11;fillColor=#85BBF0;strokeColor=#5D82A8;fontColor=#000000;align=center;metaEdit=1;" value="&lt;b style=&quot;font-size:14px&quot;&gt;Controladores REST&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;[Component: Spring MVC + Security]&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;KudoControlador, AutenticacionControlador, AuditoriaControlador… Validan entrada y obtienen el usuario del JWT.&lt;/span&gt;" vertex="1">
+          <mxGeometry height="130" width="240" x="360" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="c3" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fontSize=11;fillColor=#85BBF0;strokeColor=#5D82A8;fontColor=#000000;align=center;metaEdit=1;" value="&lt;b style=&quot;font-size:14px&quot;&gt;Tareas programadas&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;[Component: @Scheduled]&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;ProcesadorOutboxProgramado (reintentos con backoff) y TareaLimpiezaProgramada.&lt;/span&gt;" vertex="1">
+          <mxGeometry height="130" width="240" x="360" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="c4" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fontSize=11;fillColor=#85BBF0;strokeColor=#5D82A8;fontColor=#000000;align=center;metaEdit=1;" value="&lt;b style=&quot;font-size:14px&quot;&gt;Arranque&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;[Component: ApplicationRunner]&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;Crea el administrador inicial y los usuarios de demostración.&lt;/span&gt;" vertex="1">
+          <mxGeometry height="130" width="240" x="360" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="c5" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fontSize=11;fillColor=#85BBF0;strokeColor=#5D82A8;fontColor=#000000;align=center;metaEdit=1;" value="&lt;b style=&quot;font-size:14px&quot;&gt;Endpoint STOMP&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;[Component: Spring WebSocket]&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;AutenticacionStompInterceptor valida el JWT al conectar y entrega el Push al destinatario.&lt;/span&gt;" vertex="1">
+          <mxGeometry height="130" width="240" x="360" y="770" as="geometry" />
+        </mxCell>
+        <mxCell id="c6" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fontSize=11;fillColor=#85BBF0;strokeColor=#5D82A8;fontColor=#000000;align=center;metaEdit=1;" value="&lt;b style=&quot;font-size:14px&quot;&gt;Puertos de entrada&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;[Component: interfaces Java]&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;PublicarKudoPuerto&lt;br&gt;ConsultarFeedPuerto&lt;br&gt;IniciarSesionPuerto&lt;br&gt;ProcesarNotificacionesPuerto&lt;br&gt;…&lt;/span&gt;" vertex="1">
+          <mxGeometry height="470" width="200" x="630" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="c7" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fontSize=11;fillColor=#85BBF0;strokeColor=#5D82A8;fontColor=#000000;align=center;metaEdit=1;" value="&lt;b style=&quot;font-size:14px&quot;&gt;Casos de uso&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;[Component: Java puro]&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;PublicarKudoCasoUso, ProcesarNotificacionesCasoUso, ConsultarFeedCasoUso… Orquestan el dominio y los puertos de salida.&lt;/span&gt;" vertex="1">
+          <mxGeometry height="150" width="220" x="910" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="c8" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fontSize=11;fillColor=#85BBF0;strokeColor=#5D82A8;fontColor=#000000;align=center;metaEdit=1;" value="&lt;b style=&quot;font-size:14px&quot;&gt;Dominio&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;[Component: Java puro]&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;Kudo, Usuario, Notificacion, reglas de negocio, eventos y excepciones. Sin frameworks.&lt;/span&gt;" vertex="1">
+          <mxGeometry height="150" width="220" x="910" y="660" as="geometry" />
+        </mxCell>
+        <mxCell id="c9" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fontSize=11;fillColor=#85BBF0;strokeColor=#5D82A8;fontColor=#000000;align=center;metaEdit=1;" value="&lt;b style=&quot;font-size:14px&quot;&gt;Puertos de salida&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;[Component: interfaces Java]&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;RepositorioKudos&lt;br&gt;RepositorioOutbox&lt;br&gt;CanalNotificacion&lt;br&gt;AlmacenamientoArchivos&lt;br&gt;RegistroAuditoria&lt;br&gt;EmisorTokens&lt;br&gt;CodificadorContrasenas&lt;br&gt;…&lt;/span&gt;" vertex="1">
+          <mxGeometry height="940" width="190" x="1180" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="c10" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fontSize=11;fillColor=#85BBF0;strokeColor=#5D82A8;fontColor=#000000;align=center;metaEdit=1;" value="&lt;b style=&quot;font-size:14px&quot;&gt;Configuración&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;[Component: Spring Boot]&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;Ensambla puertos con adaptadores y los selecciona por propiedades (Twelve-Factor).&lt;/span&gt;" vertex="1">
+          <mxGeometry height="90" width="470" x="660" y="1190" as="geometry" />
+        </mxCell>
+        <mxCell id="c11" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fontSize=11;fillColor=#85BBF0;strokeColor=#5D82A8;fontColor=#000000;align=center;metaEdit=1;" value="&lt;b style=&quot;font-size:14px&quot;&gt;Persistencia&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;[Component: Spring Data JPA + JDBC]&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;Repositorios, consultas CQRS del feed y SQL directo. Flyway V1–V5.&lt;/span&gt;" vertex="1">
+          <mxGeometry height="100" width="250" x="1420" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="c12" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fontSize=11;fillColor=#85BBF0;strokeColor=#5D82A8;fontColor=#000000;align=center;metaEdit=1;" value="&lt;b style=&quot;font-size:14px&quot;&gt;Auditoría&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;[Component: JDBC + Micrometer]&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;Tabla de solo inserción con id_correlacion.&lt;/span&gt;" vertex="1">
+          <mxGeometry height="100" width="250" x="1420" y="340" as="geometry" />
+        </mxCell>
+        <mxCell id="c13" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fontSize=11;fillColor=#85BBF0;strokeColor=#5D82A8;fontColor=#000000;align=center;metaEdit=1;" value="&lt;b style=&quot;font-size:14px&quot;&gt;Almacenamiento&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;[Component: AWS SDK (API S3)]&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;Bucket privado y URL firmadas; valida la firma del archivo.&lt;/span&gt;" vertex="1">
+          <mxGeometry height="100" width="250" x="1420" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="c14" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fontSize=11;fillColor=#85BBF0;strokeColor=#5D82A8;fontColor=#000000;align=center;metaEdit=1;" value="&lt;b style=&quot;font-size:14px&quot;&gt;Seguridad&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;[Component: JJWT + BCrypt]&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;EmisorTokensJwt y CodificadorContrasenasBCrypt.&lt;/span&gt;" vertex="1">
+          <mxGeometry height="100" width="250" x="1420" y="580" as="geometry" />
+        </mxCell>
+        <mxCell id="c15" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fontSize=11;fillColor=#85BBF0;strokeColor=#5D82A8;fontColor=#000000;align=center;metaEdit=1;" value="&lt;b style=&quot;font-size:14px&quot;&gt;CanalCorreoSmtp&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;[Component: Spring Mail]&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;Envía el correo del Kudo por SMTP.&lt;/span&gt;" vertex="1">
+          <mxGeometry height="100" width="250" x="1420" y="700" as="geometry" />
+        </mxCell>
+        <mxCell id="c16" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fontSize=11;fillColor=#85BBF0;strokeColor=#5D82A8;fontColor=#000000;align=center;metaEdit=1;" value="&lt;b style=&quot;font-size:14px&quot;&gt;CanalSmsTraccar&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;[Component: RestClient]&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;Canal móvil por SMS (activo); CanalWhatsappCloudApi queda como alternativo.&lt;/span&gt;" vertex="1">
+          <mxGeometry height="100" width="250" x="1420" y="820" as="geometry" />
+        </mxCell>
+        <mxCell id="c17" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fontSize=11;fillColor=#85BBF0;strokeColor=#5D82A8;fontColor=#000000;align=center;metaEdit=1;" value="&lt;b style=&quot;font-size:14px&quot;&gt;Observabilidad&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;[Component: Actuator + Micrometer]&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;/actuator/health y métricas del outbox.&lt;/span&gt;" vertex="1">
+          <mxGeometry height="100" width="250" x="1420" y="940" as="geometry" />
+        </mxCell>
+        <mxCell id="c18" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fontSize=11;fillColor=#85BBF0;strokeColor=#5D82A8;fontColor=#000000;align=center;metaEdit=1;" value="&lt;b style=&quot;font-size:14px&quot;&gt;CanalPushWebSocket&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;[Component: SimpMessagingTemplate]&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;Publica el Push en la cola del destinatario.&lt;/span&gt;" vertex="1">
+          <mxGeometry height="100" width="250" x="1420" y="1060" as="geometry" />
+        </mxCell>
+        <mxCell id="c19" parent="1" style="shape=cylinder3;size=15;boundedLbl=1;backgroundOutline=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#2B6FBF;strokeColor=#1A4F8F;fontColor=#ffffff;align=center;metaEdit=1;" value="&lt;b style=&quot;font-size:14px&quot;&gt;Base de datos&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;[Container: PostgreSQL · Supabase]&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;Kudos, usuarios, outbox y auditoría.&lt;/span&gt;" vertex="1">
+          <mxGeometry height="160" width="240" x="1780" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="c20" parent="1" style="shape=cylinder3;size=15;boundedLbl=1;backgroundOutline=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#2B6FBF;strokeColor=#1A4F8F;fontColor=#ffffff;align=center;metaEdit=1;" value="&lt;b style=&quot;font-size:14px&quot;&gt;Almacenamiento de adjuntos&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;[Container: Supabase Storage]&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;Bucket privado kudos-adjuntos.&lt;/span&gt;" vertex="1">
+          <mxGeometry height="160" width="240" x="1780" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="c21" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fontSize=11;fillColor=#999999;strokeColor=#8A8A8A;fontColor=#ffffff;align=center;metaEdit=1;" value="&lt;b style=&quot;font-size:14px&quot;&gt;Brevo&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;[Software System]&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;SMTP transaccional.&lt;/span&gt;" vertex="1">
+          <mxGeometry height="100" width="240" x="1780" y="700" as="geometry" />
+        </mxCell>
+        <mxCell id="c22" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fontSize=11;fillColor=#999999;strokeColor=#8A8A8A;fontColor=#ffffff;align=center;metaEdit=1;" value="&lt;b style=&quot;font-size:14px&quot;&gt;Traccar SMS Gateway&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;[Software System]&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:10px&quot;&gt;API en la nube y celular Android que envía el SMS.&lt;/span&gt;" vertex="1">
+          <mxGeometry height="120" width="240" x="1780" y="820" as="geometry" />
+        </mxCell>
+        <mxCell id="c23" edge="1" parent="1" source="c1" style="endArrow=blockThin;endFill=1;html=1;fontSize=10;strokeColor=#707070;fontColor=#404040;rounded=1;labelBackgroundColor=#ffffff;" target="c2" value="HTTPS/JSON + JWT">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c24" edge="1" parent="1" source="c1" style="endArrow=blockThin;endFill=1;html=1;fontSize=10;strokeColor=#707070;fontColor=#404040;rounded=1;labelBackgroundColor=#ffffff;" target="c5" value="WebSocket/STOMP + JWT">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c25" edge="1" parent="1" source="c2" style="endArrow=blockThin;endFill=1;html=1;fontSize=10;strokeColor=#707070;fontColor=#404040;rounded=1;labelBackgroundColor=#ffffff;" target="c6" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c26" edge="1" parent="1" source="c3" style="endArrow=blockThin;endFill=1;html=1;fontSize=10;strokeColor=#707070;fontColor=#404040;rounded=1;labelBackgroundColor=#ffffff;" target="c6" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c27" edge="1" parent="1" source="c4" style="endArrow=blockThin;endFill=1;html=1;fontSize=10;strokeColor=#707070;fontColor=#404040;rounded=1;labelBackgroundColor=#ffffff;" target="c6" value="Invocan">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c28" edge="1" parent="1" source="c7" style="endArrow=blockThin;endFill=1;html=1;fontSize=10;strokeColor=#707070;fontColor=#404040;rounded=1;labelBackgroundColor=#ffffff;dashed=1;" target="c6" value="Implementa">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c29" edge="1" parent="1" source="c7" style="endArrow=blockThin;endFill=1;html=1;fontSize=10;strokeColor=#707070;fontColor=#404040;rounded=1;labelBackgroundColor=#ffffff;" target="c8" value="Usa">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c30" edge="1" parent="1" source="c7" style="endArrow=blockThin;endFill=1;html=1;fontSize=10;strokeColor=#707070;fontColor=#404040;rounded=1;labelBackgroundColor=#ffffff;" target="c9" value="Usa">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c31" edge="1" parent="1" source="c11" style="endArrow=blockThin;endFill=1;html=1;fontSize=10;strokeColor=#707070;fontColor=#404040;rounded=1;labelBackgroundColor=#ffffff;dashed=1;" target="c9" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1410" y="330" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c32" edge="1" parent="1" source="c12" style="endArrow=blockThin;endFill=1;html=1;fontSize=10;strokeColor=#707070;fontColor=#404040;rounded=1;labelBackgroundColor=#ffffff;dashed=1;" target="c9" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1400" y="460" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c33" edge="1" parent="1" source="c13" style="endArrow=blockThin;endFill=1;html=1;fontSize=10;strokeColor=#707070;fontColor=#404040;rounded=1;labelBackgroundColor=#ffffff;dashed=1;" target="c9" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1400" y="550" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c34" edge="1" parent="1" source="c14" style="endArrow=blockThin;endFill=1;html=1;fontSize=10;strokeColor=#707070;fontColor=#404040;rounded=1;labelBackgroundColor=#ffffff;dashed=1;" target="c9" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c35" edge="1" parent="1" source="c15" style="endArrow=blockThin;endFill=1;html=1;fontSize=10;strokeColor=#707070;fontColor=#404040;rounded=1;labelBackgroundColor=#ffffff;dashed=1;" target="c9" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c36" edge="1" parent="1" source="c16" style="endArrow=blockThin;endFill=1;html=1;fontSize=10;strokeColor=#707070;fontColor=#404040;rounded=1;labelBackgroundColor=#ffffff;dashed=1;" target="c9" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1400" y="820" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c37" edge="1" parent="1" source="c17" style="endArrow=blockThin;endFill=1;html=1;fontSize=10;strokeColor=#707070;fontColor=#404040;rounded=1;labelBackgroundColor=#ffffff;dashed=1;" target="c9" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1400" y="960" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c38" edge="1" parent="1" source="c18" style="endArrow=blockThin;endFill=1;html=1;fontSize=10;strokeColor=#707070;fontColor=#404040;rounded=1;labelBackgroundColor=#ffffff;dashed=1;" target="c9" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1390" y="1070" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c39" parent="1" style="text;html=1;fontSize=10;fontColor=#404040;align=center;" value="Implementan (líneas punteadas)" vertex="1">
+          <mxGeometry height="20" width="200" x="1300" y="1170" as="geometry" />
+        </mxCell>
+        <mxCell id="c40" edge="1" parent="1" source="c18" style="edgeStyle=orthogonalEdgeStyle;endArrow=blockThin;endFill=1;html=1;fontSize=10;strokeColor=#707070;fontColor=#404040;rounded=1;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="c5" value="Envía por el broker STOMP">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1545" y="1290" />
+              <mxPoint x="480" y="1290" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c41" edge="1" parent="1" source="c11" style="endArrow=blockThin;endFill=1;html=1;fontSize=10;strokeColor=#707070;fontColor=#404040;rounded=1;labelBackgroundColor=#ffffff;" target="c19" value="JDBC">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c42" edge="1" parent="1" source="c12" style="endArrow=blockThin;endFill=1;html=1;fontSize=10;strokeColor=#707070;fontColor=#404040;rounded=1;labelBackgroundColor=#ffffff;" target="c19" value="Inserta [JDBC]">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c43" edge="1" parent="1" source="c13" style="endArrow=blockThin;endFill=1;html=1;fontSize=10;strokeColor=#707070;fontColor=#404040;rounded=1;labelBackgroundColor=#ffffff;" target="c20" value="HTTPS / S3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c44" edge="1" parent="1" source="c15" style="endArrow=blockThin;endFill=1;html=1;fontSize=10;strokeColor=#707070;fontColor=#404040;rounded=1;labelBackgroundColor=#ffffff;" target="c21" value="SMTP 587">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c45" edge="1" parent="1" source="c16" style="endArrow=blockThin;endFill=1;html=1;fontSize=10;strokeColor=#707070;fontColor=#404040;rounded=1;labelBackgroundColor=#ffffff;" target="c22" value="HTTPS">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

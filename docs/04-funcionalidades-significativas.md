@@ -1,0 +1,17 @@
+# 04 · Funcionalidades Arquitectónicamente Significativas — UCO Kudos
+
+Una funcionalidad es **arquitectónicamente significativa** cuando aporta un alto **valor de negocio**, representa un **reto técnico** que condiciona la arquitectura, o **ambos**. Estas funcionalidades guían los drivers, los atributos de calidad y las decisiones (ADRs).
+
+| ID | Especificación | Tipo | Justificación | Observación |
+|----|----------------|------|---------------|-------------|
+| HU-17 | Publicar Kudo | **Ambos** | Es la razón de ser del producto (valor de negocio) y dispara el flujo más complejo del sistema: persistencia, tres canales de notificación y auditoría (reto técnico). | Flujo obligatorio de la línea base. Debe ser responsivo para el autor aunque los proveedores externos tarden o fallen. |
+| HU-19 · HU-20 · HU-21 | Notificar al destinatario por correo, canal móvil (WhatsApp, implementado por SMS · ADR-015) y Push | **Ambos** | El destinatario debe enterarse de inmediato (valor). Implica integrar proveedores externos con latencias y fallas independientes y una conexión en tiempo real (reto). | Exige procesamiento asíncrono, reintentos y aislamiento de fallas por canal (orientación a mensajes y resiliencia). |
+| HU-21 | Push en tiempo real a usuarios conectados | **Reto técnico** | Requiere mantener conexiones persistentes (WebSocket/STOMP o SSE) y saber qué usuarios están conectados. | Impacta la escalabilidad horizontal: con varias instancias se necesita un broker compartido. |
+| HU-18 | Adjuntar archivos a un Kudo | **Reto técnico** | Exige estrategias de almacenamiento, seguridad (tipo, tamaño, malware, acceso), recuperación y trazabilidad. | Los binarios no se guardan en la base de datos relacional; se usa almacenamiento de objetos. |
+| HU-23 | Consultar el feed de Kudos | **Ambos** | Es la operación más frecuente (DRV-002: alta demanda de lectura) y define la experiencia móvil. | Se aborda con paginación, índices, caché y DTOs de lectura ligeros (CQRS ligero). |
+| HU-22 · HU-30 | Auditoría completa del proceso | **Reto técnico** | Cada paso (guardado, correo, WhatsApp, Push) debe quedar registrado con su resultado, sin acoplar la lógica de negocio a la auditoría. | Se implementa como suscriptor de eventos de dominio. |
+| HU-01–HU-05 | Registro con doble verificación y aprobación jerárquica | **Ambos** | Garantiza la identidad de cada usuario (valor) y combina tres condiciones independientes para activar la cuenta (reto: máquina de estados). | Diseñada; fuera del alcance implementado en la línea base. |
+| HU-14 | Unicidad de roles y exclusividad | **Reto técnico** | Reglas de negocio que deben garantizarse incluso con operaciones concurrentes. | Restricciones en el dominio más índices únicos parciales en la base de datos. |
+| HU-25 | Réplicas sin límite de profundidad | **Reto técnico** | Árboles de profundidad arbitraria afectan el modelo de datos y el rendimiento de lectura. | Diseño propuesto: lista de adyacencia + consultas recursivas (CTE) o *materialized path*. |
+| HU-26 · HU-27 | Calificación única por usuario y contenido | **Reto técnico** | Debe garantizarse una sola calificación activa aunque lleguen peticiones simultáneas. | Restricción única (usuario, contenido) + operación *upsert*. |
+| HU-29 | Veto de contenido por Rector / Coordinador Académico | **Valor de negocio** | Protege la imagen institucional. | Autorización basada en roles (RBAC) en la capa de aplicación. |

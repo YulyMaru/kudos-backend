@@ -1,10 +1,15 @@
 package co.edu.uco.kudos.infraestructura.salida.persistencia.migracion;
 
+import co.edu.uco.kudos.aplicacion.dto.FiltroAuditoria;
+import co.edu.uco.kudos.aplicacion.dto.PaginaAuditoria;
+import co.edu.uco.kudos.dominio.modelo.Canal;
+import co.edu.uco.kudos.infraestructura.salida.persistencia.jdbc.ConsultasAuditoriaJdbc;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -35,23 +40,35 @@ class MigracionCanalSmsIntegracionTest {
     }
 
     @Test
-    void convierteLosCanalesWhatsappExistentesASms() {
+    void convierteElOutboxWhatsappASmsYConservaLaAuditoriaHistorica() {
         flyway("5").migrate();
         UUID outboxWhatsapp = insertarOutbox("WHATSAPP");
         UUID outboxCorreo = insertarOutbox("EMAIL");
-        UUID auditoriaWhatsapp = insertarAuditoria("WHATSAPP");
-        UUID auditoriaPush = insertarAuditoria("PUSH");
+        UUID auditoriaWhatsapp = insertarAuditoria("WHATSAPP", UUID.randomUUID());
+        UUID auditoriaPush = insertarAuditoria("PUSH", UUID.randomUUID());
 
         flyway(null).migrate();
 
         assertThat(canalOutbox(outboxWhatsapp)).isEqualTo("SMS");
         assertThat(canalOutbox(outboxCorreo)).isEqualTo("EMAIL");
-        assertThat(canalAuditoria(auditoriaWhatsapp)).isEqualTo("SMS");
+        assertThat(canalAuditoria(auditoriaWhatsapp)).isEqualTo("WHATSAPP");
         assertThat(canalAuditoria(auditoriaPush)).isEqualTo("PUSH");
         assertThat(jdbc.queryForObject("SELECT count(*) FROM outbox_notificacion WHERE canal = 'WHATSAPP'",
                 Integer.class)).isZero();
-        assertThat(jdbc.queryForObject("SELECT count(*) FROM registro_auditoria WHERE canal = 'WHATSAPP'",
-                Integer.class)).isZero();
+    }
+
+    @Test
+    void laConsultaDeAuditoriaInterpretaElCanalWhatsappHeredadoComoSms() {
+        flyway("5").migrate();
+        UUID correlacion = UUID.randomUUID();
+        insertarAuditoria("WHATSAPP", correlacion);
+        flyway(null).migrate();
+
+        PaginaAuditoria pagina = new ConsultasAuditoriaJdbc(new NamedParameterJdbcTemplate(fuenteDatos))
+                .buscar(new FiltroAuditoria(null, null, null, null, null, null, correlacion), 0, 10);
+
+        assertThat(pagina.registros()).singleElement()
+                .satisfies(registro -> assertThat(registro.canal()).isEqualTo(Canal.SMS));
     }
 
     @Test
@@ -84,12 +101,12 @@ class MigracionCanalSmsIntegracionTest {
         return id;
     }
 
-    private UUID insertarAuditoria(String canal) {
+    private UUID insertarAuditoria(String canal, UUID correlacion) {
         UUID id = UUID.randomUUID();
         jdbc.update("""
-                INSERT INTO registro_auditoria (id, fecha_hora, accion, canal, resultado)
-                VALUES (?, now(), 'NOTIFICACION_ENVIADA', ?, 'EXITOSO')
-                """, id, canal);
+                INSERT INTO registro_auditoria (id, fecha_hora, id_correlacion, accion, canal, resultado)
+                VALUES (?, now(), ?, 'NOTIFICACION_ENVIADA', ?, 'EXITOSO')
+                """, id, correlacion, canal);
         return id;
     }
 

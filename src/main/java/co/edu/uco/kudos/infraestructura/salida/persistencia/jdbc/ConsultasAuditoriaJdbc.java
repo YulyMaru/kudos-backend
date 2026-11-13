@@ -66,14 +66,20 @@ public class ConsultasAuditoriaJdbc implements ConsultasAuditoria {
                 FROM registro_auditoria""" + donde + " ORDER BY fecha_hora DESC, id LIMIT :limite OFFSET :desplazamiento",
                 parametros, (fila, numero) -> {
                     String rol = fila.getString("rol_actor");
-                    String canal = fila.getString("canal");
                     return new EntradaAuditoria(ConversionesJdbc.uuid(fila, "id"),
                             ConversionesJdbc.instante(fila, "fecha_hora"), ConversionesJdbc.uuid(fila, "id_correlacion"),
                             ConversionesJdbc.uuid(fila, "actor_id"), rol == null ? null : Rol.valueOf(rol),
                             AccionAuditoria.valueOf(fila.getString("accion")), fila.getString("recurso_tipo"),
-                            ConversionesJdbc.uuid(fila, "recurso_id"), canal == null ? null : Canal.valueOf(canal),
+                            ConversionesJdbc.uuid(fila, "recurso_id"), canal(fila.getString("canal")),
                             ResultadoAuditoria.valueOf(fila.getString("resultado")), fila.getString("detalle"));
                 });
         return new PaginaAuditoria(registros, pagina, tamano, total == null ? 0 : total);
+    }
+
+    private static Canal canal(String valor) {
+        if (valor == null) {
+            return null;
+        }
+        return "WHATSAPP".equals(valor) ? Canal.SMS : Canal.valueOf(valor);
     }
 }
