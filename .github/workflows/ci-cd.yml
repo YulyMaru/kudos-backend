@@ -143,8 +143,8 @@ jobs:
           --max-instances 1
           --no-cpu-throttling
           --cpu-boost
-          --update-env-vars "^;^SPRING_PROFILES_ACTIVE=cloud;ALMACENAMIENTO_TIPO=s3;S3_ENDPOINT=${{ vars.S3_ENDPOINT }};S3_REGION=${{ vars.S3_REGION }};S3_BUCKET=${{ vars.S3_BUCKET }};CORS_ORIGENES=${{ vars.CORS_ORIGENES }};URL_FRONTEND=${{ vars.URL_FRONTEND }};CORREO_REMITENTE=${{ vars.CORREO_REMITENTE }};WHATSAPP_TELEFONO_ID=${{ vars.WHATSAPP_TELEFONO_ID }};ADMIN_CORREO=${{ vars.ADMIN_CORREO }};WHATSAPP_PROVEEDOR=${{ vars.WHATSAPP_PROVEEDOR }}"
-          --update-secrets "DB_URL=kudos-db-url:latest,DB_USUARIO=kudos-db-usuario:latest,DB_CONTRASENA=kudos-db-contrasena:latest,JWT_SECRETO=kudos-jwt-secreto:latest,SMTP_USUARIO=kudos-smtp-usuario:latest,SMTP_CONTRASENA=kudos-smtp-contrasena:latest,WHATSAPP_TOKEN=kudos-whatsapp-token:latest,S3_CLAVE_ACCESO=kudos-s3-clave-acceso:latest,S3_CLAVE_SECRETA=kudos-s3-clave-secreta:latest,ADMIN_CONTRASENA=kudos-admin-contrasena:latest,SMS_TRACCAR_TOKEN=kudos-sms-token:latest"
+          --update-env-vars "^;^SPRING_PROFILES_ACTIVE=cloud;ALMACENAMIENTO_TIPO=s3;S3_ENDPOINT=${{ vars.S3_ENDPOINT }};S3_REGION=${{ vars.S3_REGION }};S3_BUCKET=${{ vars.S3_BUCKET }};CORS_ORIGENES=${{ vars.CORS_ORIGENES }};URL_FRONTEND=${{ vars.URL_FRONTEND }};CORREO_REMITENTE=${{ vars.CORREO_REMITENTE }};ADMIN_CORREO=${{ vars.ADMIN_CORREO }}"
+          --update-secrets "DB_URL=kudos-db-url:latest,DB_USUARIO=kudos-db-usuario:latest,DB_CONTRASENA=kudos-db-contrasena:latest,JWT_SECRETO=kudos-jwt-secreto:latest,SMTP_USUARIO=kudos-smtp-usuario:latest,SMTP_CONTRASENA=kudos-smtp-contrasena:latest,S3_CLAVE_ACCESO=kudos-s3-clave-acceso:latest,S3_CLAVE_SECRETA=kudos-s3-clave-secreta:latest,ADMIN_CONTRASENA=kudos-admin-contrasena:latest,SMS_TRACCAR_TOKEN=kudos-sms-token:latest"
 
       - name: Verificar que el servicio responde
         run: |

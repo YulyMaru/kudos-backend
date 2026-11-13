@@ -210,7 +210,7 @@ class PersistenciaPublicarKudoIntegracionTest {
 
         List<NotificacionOutboxEntidad> notificaciones = outboxRepositorio.findByIdCorrelacion(resultado.idKudo());
         assertThat(notificaciones).extracting(NotificacionOutboxEntidad::getCanal)
-                .containsExactlyInAnyOrder(Canal.EMAIL, Canal.WHATSAPP, Canal.PUSH);
+                .containsExactlyInAnyOrder(Canal.EMAIL, Canal.SMS, Canal.PUSH);
         assertThat(notificaciones).allSatisfy(notificacion -> {
             assertThat(notificacion.getEstado()).isEqualTo(EstadoNotificacion.PENDIENTE);
             assertThat(notificacion.getPayload()).containsEntry("nombreAutor", "Ana Autora")

@@ -88,7 +88,7 @@ class RegistroYActivacionCasoUsoTest {
         assertThat(solicitudes.buscarPorUsuario(ana.getId())).hasValueSatisfying(s ->
                 assertThat(s.estado()).isEqualTo(EstadoAprobacion.PENDIENTE));
         assertThat(outbox.notificaciones).extracting(Notificacion::getCanal)
-                .containsExactlyInAnyOrder(Canal.EMAIL, Canal.WHATSAPP);
+                .containsExactlyInAnyOrder(Canal.EMAIL, Canal.SMS);
         assertThat(codigos.codigos.values()).hasSize(2)
                 .allSatisfy(codigo -> assertThat(codigo.hashCodigo()).hasSize(64));
     }
@@ -104,7 +104,7 @@ class RegistroYActivacionCasoUsoTest {
         assertThat(cuentas.buscarPorId(ana.getId()).orElseThrow().estaActivo()).isFalse();
 
         verificar.verificar("ana.estudiante@uco.edu.co", PropositoCodigo.VERIFICAR_CELULAR,
-                codigoEnviado(Canal.WHATSAPP));
+                codigoEnviado(Canal.SMS));
 
         Usuario activada = cuentas.buscarPorId(ana.getId()).orElseThrow();
         assertThat(activada.estaActivo()).isTrue();
@@ -190,7 +190,7 @@ class RegistroYActivacionCasoUsoTest {
                 Rol.RECTOR, null, null, CLAVE, true));
         Usuario rectora = cuentas.buscarPorCorreo("rectora@uco.edu.co").orElseThrow();
         verificar.verificar("rectora@uco.edu.co", PropositoCodigo.VERIFICAR_CORREO, codigoEnviado(Canal.EMAIL));
-        verificar.verificar("rectora@uco.edu.co", PropositoCodigo.VERIFICAR_CELULAR, codigoEnviado(Canal.WHATSAPP));
+        verificar.verificar("rectora@uco.edu.co", PropositoCodigo.VERIFICAR_CELULAR, codigoEnviado(Canal.SMS));
 
         decidir.aprobar(administrador.getId(), solicitudes.buscarPorUsuario(rectora.getId()).orElseThrow().id());
 

@@ -25,7 +25,7 @@ final class NotificacionesCuenta {
                 RECURSO_TIPO, RECURSO_USUARIO,
                 "codigo", codigo,
                 "nombreDestinatario", usuario.getNombreCompleto());
-        return Notificacion.pendiente(UUID.randomUUID(), usuario.getId(), porCorreo ? Canal.EMAIL : Canal.WHATSAPP,
+        return Notificacion.pendiente(UUID.randomUUID(), usuario.getId(), porCorreo ? Canal.EMAIL : Canal.SMS,
                 porCorreo ? usuario.getCorreo() : usuario.getCelular(), datos, ahora);
     }
 

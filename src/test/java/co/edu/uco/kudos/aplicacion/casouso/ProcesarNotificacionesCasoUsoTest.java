@@ -42,7 +42,7 @@ class ProcesarNotificacionesCasoUsoTest {
     private PendientesEnMemoria pendientes;
     private List<EntradaAuditoria> auditoria;
     private CanalFalso correo;
-    private CanalFalso whatsapp;
+    private CanalFalso sms;
     private CanalFalso push;
 
     @BeforeEach
@@ -51,61 +51,61 @@ class ProcesarNotificacionesCasoUsoTest {
         pendientes = new PendientesEnMemoria();
         auditoria = new ArrayList<>();
         correo = new CanalFalso(Canal.EMAIL);
-        whatsapp = new CanalFalso(Canal.WHATSAPP);
+        sms = new CanalFalso(Canal.SMS);
         push = new CanalFalso(Canal.PUSH);
         pendientes.agregar(notificacion(Canal.EMAIL, "diego@uco.net.co"));
-        pendientes.agregar(notificacion(Canal.WHATSAPP, "+573002222222"));
+        pendientes.agregar(notificacion(Canal.SMS, "+573002222222"));
         pendientes.agregar(notificacion(Canal.PUSH, UUID.randomUUID().toString()));
     }
 
     @Test
     void enviaLosTresCanalesYAuditaCadaEnvio() {
-        int procesadas = casoUso(List.of(correo, whatsapp, push)).procesarPendientes();
+        int procesadas = casoUso(List.of(correo, sms, push)).procesarPendientes();
 
         assertThat(procesadas).isEqualTo(3);
         assertThat(pendientes.estados()).containsOnly(EstadoNotificacion.ENVIADO);
         assertThat(correo.enviosExitosos).isEqualTo(1);
-        assertThat(whatsapp.enviosExitosos).isEqualTo(1);
+        assertThat(sms.enviosExitosos).isEqualTo(1);
         assertThat(push.enviosExitosos).isEqualTo(1);
         assertThat(auditoria).hasSize(3).allSatisfy(entrada -> {
             assertThat(entrada.accion()).isEqualTo(AccionAuditoria.NOTIFICACION_ENVIADA);
             assertThat(entrada.idCorrelacion()).isEqualTo(ID_KUDO);
         });
         assertThat(auditoria).extracting(EntradaAuditoria::canal)
-                .containsExactlyInAnyOrder(Canal.EMAIL, Canal.WHATSAPP, Canal.PUSH);
+                .containsExactlyInAnyOrder(Canal.EMAIL, Canal.SMS, Canal.PUSH);
     }
 
     @Test
     void laFallaDeUnCanalNoAfectaALosDemas() {
-        whatsapp.fallarSiempre();
+        sms.fallarSiempre();
 
-        casoUso(List.of(correo, whatsapp, push)).procesarPendientes();
+        casoUso(List.of(correo, sms, push)).procesarPendientes();
 
         assertThat(pendientes.de(Canal.EMAIL).getEstado()).isEqualTo(EstadoNotificacion.ENVIADO);
         assertThat(pendientes.de(Canal.PUSH).getEstado()).isEqualTo(EstadoNotificacion.ENVIADO);
-        Notificacion notificacionWhatsapp = pendientes.de(Canal.WHATSAPP);
-        assertThat(notificacionWhatsapp.getEstado()).isEqualTo(EstadoNotificacion.REINTENTANDO);
-        assertThat(notificacionWhatsapp.getIntentos()).isEqualTo(1);
-        assertThat(notificacionWhatsapp.getProximoIntento()).isEqualTo(INICIO.plusSeconds(5));
-        assertThat(notificacionWhatsapp.getUltimoError()).contains("Proveedor caído");
+        Notificacion notificacionSms = pendientes.de(Canal.SMS);
+        assertThat(notificacionSms.getEstado()).isEqualTo(EstadoNotificacion.REINTENTANDO);
+        assertThat(notificacionSms.getIntentos()).isEqualTo(1);
+        assertThat(notificacionSms.getProximoIntento()).isEqualTo(INICIO.plusSeconds(5));
+        assertThat(notificacionSms.getUltimoError()).contains("Proveedor caído");
     }
 
     @Test
     void unaFallaTemporalSeEntregaEnElCuartoIntentoYQuedaAuditadoCadaIntento() {
-        whatsapp.fallarLasPrimeras(3);
-        ProcesarNotificacionesCasoUso casoUso = casoUso(List.of(correo, whatsapp, push));
+        sms.fallarLasPrimeras(3);
+        ProcesarNotificacionesCasoUso casoUso = casoUso(List.of(correo, sms, push));
 
         for (int ronda = 0; ronda < 6; ronda++) {
             casoUso.procesarPendientes();
             reloj.avanzar(Duration.ofHours(1));
         }
 
-        Notificacion notificacionWhatsapp = pendientes.de(Canal.WHATSAPP);
-        assertThat(notificacionWhatsapp.getEstado()).isEqualTo(EstadoNotificacion.ENVIADO);
-        assertThat(notificacionWhatsapp.getIntentos()).isEqualTo(4);
-        assertThat(whatsapp.intentos).isEqualTo(4);
-        assertThat(whatsapp.enviosExitosos).isEqualTo(1);
-        assertThat(auditoria).filteredOn(entrada -> entrada.canal() == Canal.WHATSAPP)
+        Notificacion notificacionSms = pendientes.de(Canal.SMS);
+        assertThat(notificacionSms.getEstado()).isEqualTo(EstadoNotificacion.ENVIADO);
+        assertThat(notificacionSms.getIntentos()).isEqualTo(4);
+        assertThat(sms.intentos).isEqualTo(4);
+        assertThat(sms.enviosExitosos).isEqualTo(1);
+        assertThat(auditoria).filteredOn(entrada -> entrada.canal() == Canal.SMS)
                 .extracting(EntradaAuditoria::accion)
                 .containsExactly(AccionAuditoria.NOTIFICACION_FALLIDA, AccionAuditoria.NOTIFICACION_FALLIDA,
                         AccionAuditoria.NOTIFICACION_FALLIDA, AccionAuditoria.NOTIFICACION_ENVIADA);
@@ -114,7 +114,7 @@ class ProcesarNotificacionesCasoUsoTest {
     @Test
     void unaFallaPermanenteQuedaFallidaTrasCincoIntentosYNoSeReintentaMas() {
         correo.fallarSiempre();
-        ProcesarNotificacionesCasoUso casoUso = casoUso(List.of(correo, whatsapp, push));
+        ProcesarNotificacionesCasoUso casoUso = casoUso(List.of(correo, sms, push));
 
         for (int ronda = 0; ronda < 8; ronda++) {
             casoUso.procesarPendientes();
@@ -131,7 +131,7 @@ class ProcesarNotificacionesCasoUsoTest {
 
     @Test
     void unaNotificacionYaEnviadaNoSeEnviaDeNuevo() {
-        ProcesarNotificacionesCasoUso casoUso = casoUso(List.of(correo, whatsapp, push));
+        ProcesarNotificacionesCasoUso casoUso = casoUso(List.of(correo, sms, push));
 
         casoUso.procesarPendientes();
         reloj.avanzar(Duration.ofHours(1));
@@ -139,28 +139,28 @@ class ProcesarNotificacionesCasoUsoTest {
         casoUso.procesarPendientes();
 
         assertThat(correo.intentos).isEqualTo(1);
-        assertThat(whatsapp.intentos).isEqualTo(1);
+        assertThat(sms.intentos).isEqualTo(1);
         assertThat(push.intentos).isEqualTo(1);
     }
 
     @Test
     void noReintentaAntesDeLaFechaProgramada() {
-        whatsapp.fallarLasPrimeras(1);
-        ProcesarNotificacionesCasoUso casoUso = casoUso(List.of(correo, whatsapp, push));
+        sms.fallarLasPrimeras(1);
+        ProcesarNotificacionesCasoUso casoUso = casoUso(List.of(correo, sms, push));
 
         casoUso.procesarPendientes();
         reloj.avanzar(Duration.ofSeconds(1));
         casoUso.procesarPendientes();
 
-        assertThat(whatsapp.intentos).isEqualTo(1);
-        assertThat(pendientes.de(Canal.WHATSAPP).getEstado()).isEqualTo(EstadoNotificacion.REINTENTANDO);
+        assertThat(sms.intentos).isEqualTo(1);
+        assertThat(pendientes.de(Canal.SMS).getEstado()).isEqualTo(EstadoNotificacion.REINTENTANDO);
     }
 
     @Test
     void elPushParaUnUsuarioDesconectadoQuedaComoNoAplica() {
         push.responderNoAplica("El destinatario no está conectado");
 
-        casoUso(List.of(correo, whatsapp, push)).procesarPendientes();
+        casoUso(List.of(correo, sms, push)).procesarPendientes();
 
         assertThat(pendientes.de(Canal.PUSH).getEstado()).isEqualTo(EstadoNotificacion.NO_APLICA);
         assertThat(auditoria).filteredOn(entrada -> entrada.canal() == Canal.PUSH).singleElement()
@@ -171,19 +171,19 @@ class ProcesarNotificacionesCasoUsoTest {
     void unCanalSinAdaptadorSeRegistraComoFallo() {
         casoUso(List.of(correo, push)).procesarPendientes();
 
-        Notificacion notificacionWhatsapp = pendientes.de(Canal.WHATSAPP);
-        assertThat(notificacionWhatsapp.getEstado()).isEqualTo(EstadoNotificacion.REINTENTANDO);
-        assertThat(notificacionWhatsapp.getUltimoError()).contains("No hay adaptador");
+        Notificacion notificacionSms = pendientes.de(Canal.SMS);
+        assertThat(notificacionSms.getEstado()).isEqualTo(EstadoNotificacion.REINTENTANDO);
+        assertThat(notificacionSms.getUltimoError()).contains("No hay adaptador");
     }
 
     @Test
     void siFallaGuardarElResultadoDeUnaNotificacionLasDemasSiguen() {
         pendientes.fallarAlActualizar(pendientes.de(Canal.EMAIL).getId());
 
-        int procesadas = casoUso(List.of(correo, whatsapp, push)).procesarPendientes();
+        int procesadas = casoUso(List.of(correo, sms, push)).procesarPendientes();
 
         assertThat(procesadas).isEqualTo(2);
-        assertThat(pendientes.de(Canal.WHATSAPP).getEstado()).isEqualTo(EstadoNotificacion.ENVIADO);
+        assertThat(pendientes.de(Canal.SMS).getEstado()).isEqualTo(EstadoNotificacion.ENVIADO);
         assertThat(pendientes.de(Canal.PUSH).getEstado()).isEqualTo(EstadoNotificacion.ENVIADO);
     }
 

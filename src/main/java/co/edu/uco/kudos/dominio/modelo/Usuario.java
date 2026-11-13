@@ -67,7 +67,7 @@ public final class Usuario {
         return estado == EstadoUsuario.ACTIVO;
     }
 
-    public boolean puedeRecibirWhatsapp() {
+    public boolean puedeRecibirSms() {
         return celularVerificado && celular != null && !celular.isBlank();
     }
 

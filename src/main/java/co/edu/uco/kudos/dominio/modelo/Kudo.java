@@ -38,7 +38,7 @@ public final class Kudo {
         Kudo kudo = new Kudo(id, autor.getId(), destinatario.getId(), categoria.getId(),
                 contenido, fechaPublicacion, adjuntos);
         kudo.eventos.add(new KudoPublicado(UUID.randomUUID(), id, autor.getId(),
-                destinatario.getId(), categoria.getId(), fechaPublicacion));
+                destinatario.getId(), categoria.getId()));
         return kudo;
     }
 

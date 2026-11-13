@@ -4,8 +4,7 @@ import co.edu.uco.kudos.aplicacion.puerto.salida.CanalNotificacion;
 import co.edu.uco.kudos.aplicacion.puerto.salida.GestorTransacciones;
 import co.edu.uco.kudos.aplicacion.puerto.salida.RegistroAuditoria;
 import co.edu.uco.kudos.aplicacion.puerto.salida.RepositorioNotificacionesPendientes;
-import co.edu.uco.kudos.infraestructura.salida.notificacion.whatsapp.CanalSmsTraccar;
-import co.edu.uco.kudos.infraestructura.salida.notificacion.whatsapp.CanalWhatsappCloudApi;
+import co.edu.uco.kudos.infraestructura.salida.notificacion.sms.CanalSmsTraccar;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -30,20 +29,11 @@ class NotificacionesConfiguracionTest {
             .withBean(Clock.class, Clock::systemUTC);
 
     @Test
-    void usaMetaPorDefecto() {
-        contexto.run(aplicacion -> assertThat(aplicacion.getBeansOfType(CanalNotificacion.class).values())
-                .hasAtLeastOneElementOfType(CanalWhatsappCloudApi.class)
-                .noneMatch(CanalSmsTraccar.class::isInstance));
-    }
-
-    @Test
-    void usaSmsTraccarCuandoSeConfiguraElProveedor() {
-        contexto.withPropertyValues("kudos.notificaciones.whatsapp.proveedor=sms-traccar",
-                        "kudos.notificaciones.smstraccar.token=token-secreto")
+    void registraElCanalSmsTraccarSinExponerElToken() {
+        contexto.withPropertyValues("kudos.notificaciones.smstraccar.token=token-secreto")
                 .run(aplicacion -> {
                     assertThat(aplicacion.getBeansOfType(CanalNotificacion.class).values())
-                            .hasAtLeastOneElementOfType(CanalSmsTraccar.class)
-                            .noneMatch(CanalWhatsappCloudApi.class::isInstance);
+                            .hasAtLeastOneElementOfType(CanalSmsTraccar.class);
                     assertThat(aplicacion.getBean(PropiedadesSmsTraccar.class).toString())
                             .doesNotContain("token-secreto");
                 });

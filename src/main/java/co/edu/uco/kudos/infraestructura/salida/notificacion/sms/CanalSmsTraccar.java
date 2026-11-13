@@ -1,4 +1,4 @@
-package co.edu.uco.kudos.infraestructura.salida.notificacion.whatsapp;
+package co.edu.uco.kudos.infraestructura.salida.notificacion.sms;
 
 import co.edu.uco.kudos.aplicacion.dto.ResultadoEnvio;
 import co.edu.uco.kudos.aplicacion.puerto.salida.CanalNotificacion;
@@ -35,7 +35,7 @@ public class CanalSmsTraccar implements CanalNotificacion {
 
     @Override
     public Canal canal() {
-        return Canal.WHATSAPP;
+        return Canal.SMS;
     }
 
     @Override

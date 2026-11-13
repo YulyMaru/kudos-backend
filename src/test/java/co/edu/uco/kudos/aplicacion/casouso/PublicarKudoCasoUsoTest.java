@@ -74,7 +74,7 @@ class PublicarKudoCasoUsoTest {
         assertThat(resultado.fechaPublicacion()).isEqualTo(AHORA);
         assertThat(kudos.guardados).singleElement().extracting(Kudo::getId).isEqualTo(resultado.idKudo());
         assertThat(outbox.guardadas).extracting(Notificacion::getCanal)
-                .containsExactlyInAnyOrder(Canal.EMAIL, Canal.WHATSAPP, Canal.PUSH);
+                .containsExactlyInAnyOrder(Canal.EMAIL, Canal.SMS, Canal.PUSH);
         assertThat(outbox.guardadas).allSatisfy(notificacion -> {
             assertThat(notificacion.getEstado()).isEqualTo(EstadoNotificacion.PENDIENTE);
             assertThat(notificacion.getIdCorrelacion()).isEqualTo(resultado.idKudo());
@@ -82,7 +82,7 @@ class PublicarKudoCasoUsoTest {
                     .containsEntry("nombreCategoria", "Liderazgo");
         });
         assertThat(destinoDe(Canal.EMAIL)).isEqualTo(destinatario.getCorreo());
-        assertThat(destinoDe(Canal.WHATSAPP)).isEqualTo(destinatario.getCelular());
+        assertThat(destinoDe(Canal.SMS)).isEqualTo(destinatario.getCelular());
         assertThat(destinoDe(Canal.PUSH)).isEqualTo(destinatario.getId().toString());
         assertThat(auditoria.entradas).singleElement().satisfies(entrada -> {
             assertThat(entrada.accion()).isEqualTo(AccionAuditoria.KUDO_PUBLICADO);
@@ -92,15 +92,15 @@ class PublicarKudoCasoUsoTest {
     }
 
     @Test
-    void marcaWhatsappComoNoAplicaCuandoElDestinatarioNoTieneCelularVerificado() {
+    void marcaSmsComoNoAplicaCuandoElDestinatarioNoTieneCelularVerificado() {
         Usuario sinCelular = usuario("Sin Celular", null, false);
         usuarios.agregar(sinCelular);
 
         casoUso.publicar(comando(sinCelular.getId(), List.of()));
 
-        Notificacion whatsapp = outbox.guardadas.stream()
-                .filter(notificacion -> notificacion.getCanal() == Canal.WHATSAPP).findFirst().orElseThrow();
-        assertThat(whatsapp.getEstado()).isEqualTo(EstadoNotificacion.NO_APLICA);
+        Notificacion sms = outbox.guardadas.stream()
+                .filter(notificacion -> notificacion.getCanal() == Canal.SMS).findFirst().orElseThrow();
+        assertThat(sms.getEstado()).isEqualTo(EstadoNotificacion.NO_APLICA);
         assertThat(auditoria.entradas).extracting(EntradaAuditoria::accion)
                 .contains(AccionAuditoria.NOTIFICACION_NO_APLICA);
     }

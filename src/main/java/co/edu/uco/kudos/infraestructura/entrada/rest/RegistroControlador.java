@@ -34,7 +34,7 @@ public class RegistroControlador {
                 solicitud.celular(), solicitud.rol(), solicitud.facultadId(), solicitud.programaId(),
                 solicitud.contrasena(), Boolean.TRUE.equals(solicitud.aceptaPolitica())));
         return ResponseEntity.accepted().body(new MensajeRespuesta(
-                "Solicitud registrada. Revisa tu correo y tu WhatsApp para verificar tus datos"));
+                "Solicitud registrada. Revisa tu correo y tus SMS para verificar tus datos"));
     }
 
     @PostMapping("/verificar")

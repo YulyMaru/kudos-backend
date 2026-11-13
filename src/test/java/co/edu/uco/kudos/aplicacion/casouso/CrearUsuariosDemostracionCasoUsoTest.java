@@ -43,7 +43,7 @@ class CrearUsuariosDemostracionCasoUsoTest {
         assertThat(segundaVez).isZero();
         assertThat(cuentas.usuarios.values()).hasSize(2).allSatisfy(usuario -> {
             assertThat(usuario.getEstado()).isEqualTo(EstadoUsuario.ACTIVO);
-            assertThat(usuario.puedeRecibirWhatsapp()).isTrue();
+            assertThat(usuario.puedeRecibirSms()).isTrue();
             assertThat(usuario.getHashContrasena()).isEqualTo("hash:Clave-Segura-2026");
         });
         assertThat(cuentas.usuarios.values()).extracting(Usuario::getCorreo)

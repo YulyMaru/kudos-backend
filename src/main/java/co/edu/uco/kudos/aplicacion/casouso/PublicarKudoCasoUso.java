@@ -166,12 +166,12 @@ public final class PublicarKudoCasoUso implements PublicarKudoPuerto {
 
         Notificacion correo = Notificacion.pendiente(idEvento, idCorrelacion, Canal.EMAIL,
                 destinatario.getCorreo(), datos, ahora);
-        Notificacion whatsapp = destinatario.puedeRecibirWhatsapp()
-                ? Notificacion.pendiente(idEvento, idCorrelacion, Canal.WHATSAPP, destinatario.getCelular(), datos, ahora)
-                : Notificacion.noAplica(idEvento, idCorrelacion, Canal.WHATSAPP, datos, MOTIVO_SIN_CELULAR, ahora);
+        Notificacion sms = destinatario.puedeRecibirSms()
+                ? Notificacion.pendiente(idEvento, idCorrelacion, Canal.SMS, destinatario.getCelular(), datos, ahora)
+                : Notificacion.noAplica(idEvento, idCorrelacion, Canal.SMS, datos, MOTIVO_SIN_CELULAR, ahora);
         Notificacion push = Notificacion.pendiente(idEvento, idCorrelacion, Canal.PUSH,
                 destinatario.getId().toString(), datos, ahora);
-        return List.of(correo, whatsapp, push);
+        return List.of(correo, sms, push);
     }
 
     private void revertirArchivos(List<String> claves, RuntimeException errorOriginal) {

@@ -26,15 +26,15 @@ class RegistroAuditoriaConMetricasTest {
     void cuentaKudosPublicadosYNotificacionesPorCanal() {
         registro.registrar(entrada(AccionAuditoria.KUDO_PUBLICADO, null, ResultadoAuditoria.EXITOSO));
         registro.registrar(entrada(AccionAuditoria.NOTIFICACION_ENVIADA, Canal.EMAIL, ResultadoAuditoria.EXITOSO));
-        registro.registrar(entrada(AccionAuditoria.NOTIFICACION_FALLIDA, Canal.WHATSAPP, ResultadoAuditoria.FALLIDO));
-        registro.registrar(entrada(AccionAuditoria.NOTIFICACION_FALLIDA, Canal.WHATSAPP, ResultadoAuditoria.FALLIDO));
+        registro.registrar(entrada(AccionAuditoria.NOTIFICACION_FALLIDA, Canal.SMS, ResultadoAuditoria.FALLIDO));
+        registro.registrar(entrada(AccionAuditoria.NOTIFICACION_FALLIDA, Canal.SMS, ResultadoAuditoria.FALLIDO));
 
         assertThat(guardadas).hasSize(4);
         assertThat(metricas.counter(RegistroAuditoriaConMetricas.METRICA_KUDOS_PUBLICADOS).count()).isEqualTo(1);
         assertThat(metricas.counter(RegistroAuditoriaConMetricas.METRICA_NOTIFICACIONES,
                 "canal", "EMAIL", "resultado", "EXITOSO").count()).isEqualTo(1);
         assertThat(metricas.counter(RegistroAuditoriaConMetricas.METRICA_NOTIFICACIONES,
-                "canal", "WHATSAPP", "resultado", "FALLIDO").count()).isEqualTo(2);
+                "canal", "SMS", "resultado", "FALLIDO").count()).isEqualTo(2);
     }
 
     @Test

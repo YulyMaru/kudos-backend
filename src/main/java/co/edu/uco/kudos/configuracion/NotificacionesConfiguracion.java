@@ -9,9 +9,7 @@ import co.edu.uco.kudos.aplicacion.puerto.salida.RepositorioNotificacionesPendie
 import co.edu.uco.kudos.dominio.regla.PoliticaReintentos;
 import co.edu.uco.kudos.infraestructura.salida.notificacion.correo.CanalCorreoSmtp;
 import co.edu.uco.kudos.infraestructura.salida.notificacion.push.CanalPushWebSocket;
-import co.edu.uco.kudos.infraestructura.salida.notificacion.whatsapp.CanalSmsTraccar;
-import co.edu.uco.kudos.infraestructura.salida.notificacion.whatsapp.CanalWhatsappCloudApi;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import co.edu.uco.kudos.infraestructura.salida.notificacion.sms.CanalSmsTraccar;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,8 +27,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Configuration
 @EnableScheduling
-@EnableConfigurationProperties({PropiedadesCorreo.class, PropiedadesWhatsapp.class, PropiedadesSmsTraccar.class,
-        PropiedadesOutbox.class})
+@EnableConfigurationProperties({PropiedadesCorreo.class, PropiedadesSmsTraccar.class, PropiedadesOutbox.class})
 public class NotificacionesConfiguracion {
 
     @Bean
@@ -40,28 +37,14 @@ public class NotificacionesConfiguracion {
     }
 
     @Bean
-    @ConditionalOnProperty(prefix = "kudos.notificaciones.whatsapp", name = "proveedor", havingValue = "meta",
-            matchIfMissing = true)
-    CanalNotificacion canalWhatsapp(PropiedadesWhatsapp propiedades) {
+    CanalNotificacion canalSmsTraccar(PropiedadesSmsTraccar propiedades, PropiedadesCorreo propiedadesCorreo) {
         RestClient cliente = RestClient.builder()
-                .baseUrl(propiedades.urlApi())
                 .requestFactory(fabricaPeticiones(propiedades))
-                .build();
-        return new CanalWhatsappCloudApi(cliente, propiedades.token(), propiedades.telefonoId(),
-                propiedades.plantilla(), propiedades.plantillaCodigo(), propiedades.idioma());
-    }
-
-    @Bean
-    @ConditionalOnProperty(prefix = "kudos.notificaciones.whatsapp", name = "proveedor", havingValue = "sms-traccar")
-    CanalNotificacion canalSmsTraccar(PropiedadesWhatsapp propiedadesWhatsapp, PropiedadesSmsTraccar propiedades,
-                                      PropiedadesCorreo propiedadesCorreo) {
-        RestClient cliente = RestClient.builder()
-                .requestFactory(fabricaPeticiones(propiedadesWhatsapp))
                 .build();
         return new CanalSmsTraccar(cliente, propiedades.url(), propiedades.token(), propiedadesCorreo.urlFrontend());
     }
 
-    private static JdkClientHttpRequestFactory fabricaPeticiones(PropiedadesWhatsapp propiedades) {
+    private static JdkClientHttpRequestFactory fabricaPeticiones(PropiedadesSmsTraccar propiedades) {
         HttpClient clienteHttp = HttpClient.newBuilder().connectTimeout(propiedades.tiempoConexion()).build();
         JdkClientHttpRequestFactory fabrica = new JdkClientHttpRequestFactory(clienteHttp);
         fabrica.setReadTimeout(propiedades.tiempoLectura());

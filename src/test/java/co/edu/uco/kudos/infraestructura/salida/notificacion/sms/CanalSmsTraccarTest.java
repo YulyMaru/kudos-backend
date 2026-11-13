@@ -1,4 +1,4 @@
-package co.edu.uco.kudos.infraestructura.salida.notificacion.whatsapp;
+package co.edu.uco.kudos.infraestructura.salida.notificacion.sms;
 
 import co.edu.uco.kudos.aplicacion.dto.ResultadoEnvio;
 import co.edu.uco.kudos.dominio.modelo.Canal;
@@ -110,12 +110,12 @@ class CanalSmsTraccarTest {
 
     private CanalSmsTraccar canal(String token, String urlFrontend) {
         CanalSmsTraccar canal = new CanalSmsTraccar(constructor.build(), URL, token, urlFrontend);
-        assertThat(canal.canal()).isEqualTo(Canal.WHATSAPP);
+        assertThat(canal.canal()).isEqualTo(Canal.SMS);
         return canal;
     }
 
     private static Notificacion notificacion(String celular, Map<String, String> datos) {
-        return Notificacion.pendiente(UUID.randomUUID(), UUID.randomUUID(), Canal.WHATSAPP, celular, datos,
+        return Notificacion.pendiente(UUID.randomUUID(), UUID.randomUUID(), Canal.SMS, celular, datos,
                 Instant.parse("2026-11-11T10:00:00Z"));
     }
 }
