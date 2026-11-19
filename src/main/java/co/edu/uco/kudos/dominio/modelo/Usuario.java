@@ -59,8 +59,8 @@ public final class Usuario {
                                     UUID facultadId, UUID programaId) {
         UUID facultadAlcance = rol == Rol.COORDINADOR_FACULTAD ? facultadId : null;
         UUID programaAlcance = rol == Rol.COORDINADOR_PROGRAMA ? programaId : null;
-        return new Usuario(UUID.randomUUID(), nombreCompleto, correo, celular, true, true, rol,       // true en los dos para poder entrar sin la validacion de corr y cel
-                EstadoUsuario.ACTIVO, hashContrasena, 0, null, facultadAlcance, programaAlcance);
+        return new Usuario(UUID.randomUUID(), nombreCompleto, correo, celular, true, true, rol,
+                EstadoUsuario.PENDIENTE, hashContrasena, 0, null, facultadAlcance, programaAlcance);
     }
 
     public boolean estaActivo() {
