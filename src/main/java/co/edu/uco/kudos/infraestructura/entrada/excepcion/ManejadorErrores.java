@@ -83,15 +83,6 @@ public class ManejadorErrores extends ResponseEntityExceptionHandler {
         return problema;
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ProblemDetail conflictoDeDatos(DataIntegrityViolationException error) {
-        LOG.warn("Violación de integridad de datos: {}", error.getMostSpecificCause().getMessage());
-        ProblemDetail problema = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT,
-                "La operación entra en conflicto con datos existentes");
-        problema.setTitle("Conflicto de datos");
-        problema.setProperty("codigo", "CONFLICTO_DE_DATOS");
-        return problema;
-    }
 
     @ExceptionHandler(UncheckedIOException.class)
     public ProblemDetail archivoIlegible(UncheckedIOException error) {
