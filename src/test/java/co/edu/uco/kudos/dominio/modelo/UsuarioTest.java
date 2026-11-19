@@ -55,12 +55,12 @@ class UsuarioTest {
     @Test
     void sabeSiTieneContrasena() {
         assertThat(usuario().tieneContrasena()).isTrue();
-        assertThat(new Usuario(UUID.randomUUID(), "Sin clave", "s@uco.net.co", null, false, Rol.ESTUDIANTE,
+        assertThat(new Usuario(UUID.randomUUID(), "Sin clave", "s@uco.net.co", null, true, Rol.ESTUDIANTE,
                 EstadoUsuario.ACTIVO).tieneContrasena()).isFalse();
     }
 
     private static Usuario usuario() {
-        return new Usuario(UUID.randomUUID(), "Ana", "ana@uco.net.co", null, false, Rol.DOCENTE,
+        return new Usuario(UUID.randomUUID(), "Ana", "ana@uco.net.co", null, true, Rol.DOCENTE,
                 EstadoUsuario.ACTIVO, "hash", 0, null);
     }
 }
