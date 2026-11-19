@@ -94,12 +94,12 @@ public final class RegistrarUsuarioCasoUso implements RegistrarUsuarioPuerto {
         SolicitudRegistro solicitud = SolicitudRegistro.crear(usuario, facultadId, programaId, ahora);
         List<CodigoVerificacion> nuevosCodigos = new ArrayList<>();
         List<Notificacion> notificaciones = new ArrayList<>();
-        for (PropositoCodigo proposito : List.of(PropositoCodigo.VERIFICAR_CORREO, PropositoCodigo.VERIFICAR_CELULAR)) {
-            String codigo = TokensSeguros.generarCodigoNumerico();
-            nuevosCodigos.add(CodigoVerificacion.emitir(usuario.getId(), proposito,
-                    TokensSeguros.hashCodigo(usuario.getId(), codigo), ahora, vigenciaCodigos));
-            notificaciones.add(NotificacionesCuenta.codigo(usuario, proposito, codigo, ahora));
-        }
+//        for (PropositoCodigo proposito : List.of(PropositoCodigo.VERIFICAR_CORREO, PropositoCodigo.VERIFICAR_CELULAR)) {
+//            String codigo = TokensSeguros.generarCodigoNumerico();
+//            nuevosCodigos.add(CodigoVerificacion.emitir(usuario.getId(), proposito,
+//                    TokensSeguros.hashCodigo(usuario.getId(), codigo), ahora, vigenciaCodigos));
+//            notificaciones.add(NotificacionesCuenta.codigo(usuario, proposito, codigo, ahora));
+//        }
 
         transacciones.enTransaccion(() -> {
             cuentas.guardar(usuario);
